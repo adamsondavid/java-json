@@ -9,7 +9,8 @@ class JsonParserTest {
 
   @Test
   public void parseObjectTest() throws JsonException, IOException {
-    JsonObject actual = JsonObject.of("""
+    JsonObject actual = JsonObject.of(
+        """
         {
           "people": [
             {
@@ -23,7 +24,9 @@ class JsonParserTest {
               "adult": false
             }
           ]
-        }""");
+        }
+        """
+    );
 
     JsonObject expected = new JsonObject.Builder()
         .put("people", new JsonArray.Builder()
@@ -41,6 +44,19 @@ class JsonParserTest {
         .build();
 
     assertEquals(expected, actual);
+  }
+
+  @Test
+  public void missingColonTest() {
+    JsonSyntaxException exception = assertThrows(JsonSyntaxException.class, () -> {
+      JsonObject actual = JsonObject.of(
+          """
+          {"name": "Peter", "age" 21}
+          """
+      );
+    });
+    assertEquals(1, exception.getLineNumber());
+    assertEquals(25, exception.getCharNumber());
   }
 
 }
